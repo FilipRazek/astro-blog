@@ -2,13 +2,21 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import BlogPost from "../../components/BlogPost.astro";
 
+type Post = {
+  frontmatter: {
+    title?: string;
+    tags?: string[];
+  };
+  url?: string;
+};
+
 export async function getStaticPaths() {
-  const allPosts = await Astro.glob("../posts/*.md");
+  const allPosts: Post[] = await Astro.glob("../posts/*.md");
   const uniqueTags = [
-    ...new Set(allPosts.flatMap((post) => post.frontmatter.tags)),
+    ...new Set(allPosts.flatMap((post) => post.frontmatter.tags ?? [])),
   ];
 
-  return uniqueTags.map((tag) => ({
+  return uniqueTags.map((tag: string) => ({
     params: { tag },
     props: {
       posts: allPosts.filter((post) => post.frontmatter.tags?.includes(tag)),
